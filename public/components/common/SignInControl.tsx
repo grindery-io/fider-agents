@@ -1,9 +1,9 @@
 import "./SignInControl.scss"
 
 import React, { useState } from "react"
-import { SocialSignInButton, Form, Button, Input, Message } from "@fider/components"
+import { SocialSignInButton, Form, Button, Input } from "@fider/components"
 import { Divider } from "@fider/components/layout"
-import { device, actions, Failure, isCookieEnabled } from "@fider/services"
+import { device, actions, Failure } from "@fider/services"
 import { useFider } from "@fider/hooks"
 import { Trans } from "@lingui/react/macro"
 
@@ -39,6 +39,8 @@ export const SignInControl: React.FunctionComponent<SignInControlProps> = (props
 
   const providersLen = fider.settings.oauth.length
 
+  // This doesn't work on some devices
+  /*
   if (!isCookieEnabled()) {
     return (
       <Message type="error">
@@ -47,6 +49,7 @@ export const SignInControl: React.FunctionComponent<SignInControlProps> = (props
       </Message>
     )
   }
+  */
 
   return (
     <div className="c-signin-control">
