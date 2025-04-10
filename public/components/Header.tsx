@@ -32,6 +32,11 @@ export const Header = () => {
               <h1 className="text-header">{fider.session.tenant.name}</h1>
             </a>
             {fider.session.isAuthenticated && (
+              <a href="/feed" style={{ marginRight: "auto", marginLeft: "16px", marginTop: "4px", fontWeight: "bold" }}>
+                Feed
+              </a>
+            )}
+            {fider.session.isAuthenticated && (
               <HStack spacing={2}>
                 <NotificationIndicator />
                 <UserMenu />

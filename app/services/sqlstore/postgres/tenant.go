@@ -29,6 +29,10 @@ type dbTenant struct {
 	LogoBlobKey        string `db:"logo_bkey"`
 	CustomCSS          string `db:"custom_css"`
 	IsEmailAuthAllowed bool   `db:"is_email_auth_allowed"`
+	IsFeedEnabled      bool   `db:"is_feed_enabled"`
+	FeedAppId          string `db:"feed_app_id"`
+	FeedApiKey         string `db:"feed_api_key"`
+	FeedApiSecret      string `db:"feed_api_secret"`
 }
 
 func (t *dbTenant) toModel() *entity.Tenant {
@@ -49,6 +53,10 @@ func (t *dbTenant) toModel() *entity.Tenant {
 		LogoBlobKey:        t.LogoBlobKey,
 		CustomCSS:          t.CustomCSS,
 		IsEmailAuthAllowed: t.IsEmailAuthAllowed,
+		IsFeedEnabled:      t.IsFeedEnabled,
+		FeedAppId:          t.FeedAppId,
+		FeedApiKey:         t.FeedApiKey,
+		FeedApiSecret:      t.FeedApiSecret,
 	}
 
 	return tenant
@@ -171,6 +179,23 @@ func updateTenantAdvancedSettings(ctx context.Context, c *cmd.UpdateTenantAdvanc
 	})
 }
 
+func updateTenantFeedSettings(ctx context.Context, c *cmd.UpdateTenantFeedSettings) error {
+	return using(ctx, func(trx *dbx.Trx, tenant *entity.Tenant, user *entity.User) error {
+		query := "UPDATE tenants SET is_feed_enabled = $1, feed_app_id = $2, feed_api_key = $3, feed_api_secret = $4 WHERE id = $5"
+		_, err := trx.Execute(query, c.IsFeedEnabled, c.FeedAppId, c.FeedApiKey, c.FeedApiSecret, tenant.ID)
+		if err != nil {
+			return errors.Wrap(err, "failed update tenant feed settings")
+		}
+
+		tenant.IsFeedEnabled = c.IsFeedEnabled
+		tenant.FeedAppId = c.FeedAppId
+		tenant.FeedApiKey = c.FeedApiKey
+		tenant.FeedApiSecret = c.FeedApiSecret
+
+		return nil
+	})
+}
+
 func activateTenant(ctx context.Context, c *cmd.ActivateTenant) error {
 	return using(ctx, func(trx *dbx.Trx, tenant *entity.Tenant, user *entity.User) error {
 		query := "UPDATE tenants SET status = $1 WHERE id = $2"
@@ -259,7 +284,7 @@ func getFirstTenant(ctx context.Context, q *query.GetFirstTenant) error {
 		tenant := dbTenant{}
 
 		err := trx.Get(&tenant, `
-			SELECT id, name, subdomain, cname, invitation, locale, welcome_message, status, is_private, logo_bkey, custom_css, is_email_auth_allowed
+			SELECT id, name, subdomain, cname, invitation, locale, welcome_message, status, is_private, logo_bkey, custom_css, is_email_auth_allowed, is_feed_enabled, feed_app_id, feed_api_key, feed_api_secret
 			FROM tenants
 			ORDER BY id LIMIT 1
 		`)
@@ -278,7 +303,7 @@ func getTenantByDomain(ctx context.Context, q *query.GetTenantByDomain) error {
 		tenant := dbTenant{}
 
 		err := trx.Get(&tenant, `
-			SELECT id, name, subdomain, cname, invitation, locale, welcome_message, status, is_private, logo_bkey, custom_css, is_email_auth_allowed
+			SELECT id, name, subdomain, cname, invitation, locale, welcome_message, status, is_private, logo_bkey, custom_css, is_email_auth_allowed, is_feed_enabled, feed_app_id, feed_api_key, feed_api_secret
 			FROM tenants t
 			WHERE subdomain = $1 OR subdomain = $2 OR cname = $3 
 			ORDER BY cname DESC

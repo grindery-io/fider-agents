@@ -16,6 +16,10 @@ type Tenant struct {
 	LogoBlobKey        string            `json:"logoBlobKey"`
 	CustomCSS          string            `json:"-"`
 	IsEmailAuthAllowed bool              `json:"isEmailAuthAllowed"`
+	IsFeedEnabled      bool              `json:"isFeedEnabled"`
+	FeedAppId          string            `json:"feedAppId"`
+	FeedApiKey         string            `json:"feedApiKey"`
+	FeedApiSecret      string            `json:"feedApiSecret"`
 }
 
 func (t *Tenant) IsDisabled() bool {

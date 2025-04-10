@@ -37,6 +37,27 @@ func AdvancedSettingsPage() web.HandlerFunc {
 	}
 }
 
+// FeedSettingsPage is the activity feed settings page
+func FeedSettingsPage() web.HandlerFunc {
+	return func(c *web.Context) error {
+		tenant := c.Tenant()
+		apiKey := tenant.FeedApiKey
+		apiSecret := tenant.FeedApiSecret
+		appId := tenant.FeedAppId
+		isFeedEnabled := tenant.IsFeedEnabled
+		return c.Page(http.StatusOK, web.Props{
+			Page:  "Administration/pages/FeedSettings.page",
+			Title: "Feed · Site Settings",
+			Data: web.Map{
+				"isFeedEnabled": isFeedEnabled,
+				"feedAppId":     appId,
+				"feedApiKey":    apiKey,
+				"feedApiSecret": apiSecret,
+			},
+		})
+	}
+}
+
 // UpdateSettings update current tenant' settings
 func UpdateSettings() web.HandlerFunc {
 	return func(c *web.Context) error {
@@ -84,6 +105,26 @@ func UpdateAdvancedSettings() web.HandlerFunc {
 
 		if err := bus.Dispatch(c, &cmd.UpdateTenantAdvancedSettings{
 			CustomCSS: action.CustomCSS,
+		}); err != nil {
+			return c.Failure(err)
+		}
+
+		return c.Ok(web.Map{})
+	}
+}
+
+func UpdateFeedSettings() web.HandlerFunc {
+	return func(c *web.Context) error {
+		action := new(actions.UpdateTenantFeedSettings)
+		if result := c.BindTo(action); !result.Ok {
+			return c.HandleValidation(result)
+		}
+
+		if err := bus.Dispatch(c, &cmd.UpdateTenantFeedSettings{
+			IsFeedEnabled: action.IsFeedEnabled,
+			FeedAppId:     action.FeedAppId,
+			FeedApiKey:    action.FeedApiKey,
+			FeedApiSecret: action.FeedApiSecret,
 		}); err != nil {
 			return c.Failure(err)
 		}

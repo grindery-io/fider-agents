@@ -37,6 +37,13 @@ type UpdateTenantAdvancedSettings struct {
 	CustomCSS string
 }
 
+type UpdateTenantFeedSettings struct {
+	IsFeedEnabled bool
+	FeedAppId     string
+	FeedApiKey    string
+	FeedApiSecret string
+}
+
 type ActivateTenant struct {
 	TenantID int
 }
@@ -47,7 +54,7 @@ type SaveVerificationKey struct {
 	Request  NewEmailVerification
 }
 
-//NewEmailVerification is used to define an email verification process
+// NewEmailVerification is used to define an email verification process
 type NewEmailVerification interface {
 	GetEmail() string
 	GetName() string

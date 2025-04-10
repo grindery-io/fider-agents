@@ -39,6 +39,17 @@ export const updateTenantAdvancedSettings = async (customCSS: string): Promise<R
   return await http.post("/_api/admin/settings/advanced", { customCSS })
 }
 
+export interface UpdateTenantFeedSettingsRequest {
+  isFeedEnabled: boolean
+  feedAppId: string
+  feedApiKey: string
+  feedApiSecret: string
+}
+
+export const updateTenantFeedSettings = async (request: UpdateTenantFeedSettingsRequest): Promise<Result> => {
+  return await http.post("/_api/admin/settings/feed", request)
+}
+
 export const updateTenantPrivacy = async (isPrivate: boolean): Promise<Result> => {
   return await http.post("/_api/admin/settings/privacy", {
     isPrivate,

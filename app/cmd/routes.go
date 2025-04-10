@@ -120,6 +120,8 @@ func routes(r *web.Engine) *web.Engine {
 		// From this step, a User is required
 		ui.Use(middlewares.IsAuthenticated())
 
+		ui.Get("/feed", handlers.Feed())
+
 		ui.Get("/settings", handlers.UserSettings())
 		ui.Get("/notifications", handlers.Notifications())
 		ui.Get("/notifications/:id", handlers.ReadNotification())
@@ -147,6 +149,7 @@ func routes(r *web.Engine) *web.Engine {
 		ui.Get("/admin/members", handlers.ManageMembers())
 		ui.Get("/admin/tags", handlers.ManageTags())
 		ui.Get("/admin/authentication", handlers.ManageAuthentication())
+		ui.Get("/admin/feed", handlers.FeedSettingsPage())
 		ui.Get("/_api/admin/oauth/:provider", handlers.GetOAuthConfig())
 
 		// From this step, only Administrators are allowed
@@ -164,6 +167,7 @@ func routes(r *web.Engine) *web.Engine {
 		ui.Get("/_api/admin/webhook/props/:type", handlers.GetWebhookProps())
 		ui.Post("/_api/admin/settings/general", handlers.UpdateSettings())
 		ui.Post("/_api/admin/settings/advanced", handlers.UpdateAdvancedSettings())
+		ui.Post("/_api/admin/settings/feed", handlers.UpdateFeedSettings())
 		ui.Post("/_api/admin/settings/privacy", handlers.UpdatePrivacy())
 		ui.Post("/_api/admin/settings/emailauth", handlers.UpdateEmailAuthAllowed())
 		ui.Post("/_api/admin/oauth", handlers.SaveOAuthConfig())
